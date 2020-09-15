@@ -12,5 +12,8 @@ class Evento (models.Model):
     def __str__ (self):
         return self.titulo
 
-    def getDataEvento (self) :
-        return self.data_evento.strftime('%Y/%m/%d') #formato que foi aceito
+    def get_data_evento (self) :
+        return self.data_evento.strftime('%d/%m/%Y') #formato que foi aceito
+
+    def get_data_input_evento (self) :
+        return self.data_evento.strftime('%Y-%m-%d')
