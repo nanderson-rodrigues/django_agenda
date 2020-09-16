@@ -3,7 +3,8 @@ from core.models import Evento
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-
+from datetime import date
+from django.http.response import JsonResponse
 # Create your views here.
 
 #def index (request) :
@@ -12,7 +13,8 @@ from django.contrib import messages
 @login_required(login_url='/login/')
 def lista_eventos (request) :
     usuario = request.user
-    evento = Evento.objects.filter(usuario=usuario)
+    data_atual = date.today()
+    evento = Evento.objects.filter(usuario=usuario, data_evento__gt=data_atual) #__gt == '>'
     dados = {'eventos': evento}
     return render(request, 'agenda.html', dados)
 
@@ -76,3 +78,10 @@ def delete_evento (request, id_evento) :
     if usuario == evento.usuario: # o usuario só exclui o que é dele
         evento.delete()
     return redirect('/')
+
+@login_required(login_url='/login/')
+def json_lista_eventos (request):
+    usuario = request.user
+    evento = Evento.objects.filter(usuario=usuario).values('id','titulo')
+    # precisa de safe=false porque esta passando uma lista de dicionarios ao inves de dicionatio direto
+    return JsonResponse(list(evento), safe=False)
